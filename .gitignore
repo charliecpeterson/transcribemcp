@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual envs
+.venv
+.env
+
+# Project data (SQLite, transcripts, job state)
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Audio + transcripts (user-owned, never commit)
+*.wav
+*.m4a
+*.mp3
+*.mp4
+*.flac
+*.opus
+*.webm
+tests/fixtures/*.wav
+tests/fixtures/*.m4a
+
+# OS
+.DS_Store
+
+# Claude Code session/review transcript dumps
+*-command-message*.txt

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "meetingtool": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/charlie/projects/meetingtool",
+        "run",
+        "meetingtool"
+      ]
+    }
+  }
+}
