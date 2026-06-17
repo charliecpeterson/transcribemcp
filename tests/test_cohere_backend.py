@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from meetingtool import config as config_mod
-from meetingtool.backends.cohere_backend import CohereBackend
-from meetingtool.vad import VoicedSpan
+from transcribemcp import config as config_mod
+from transcribemcp.backends.cohere_backend import CohereBackend
+from transcribemcp.vad import VoicedSpan
 
 
 @pytest.fixture
@@ -14,7 +14,6 @@ def cohere_settings(monkeypatch, tmp_path):
     monkeypatch.setenv("TRANSCRIPTION_BACKEND", "cohere")
     monkeypatch.setenv("COHERE_LANG", "en")
     monkeypatch.setenv("DIARIZE", "false")
-    monkeypatch.setenv("MEETINGTOOL_DATA_DIR", str(tmp_path))
     config_mod._settings = None
     yield
     config_mod._settings = None
@@ -42,7 +41,7 @@ def test_cohere_synthesizes_segments_from_vad(cohere_settings, tmp_path):
     backend._runtime = "transformers"
 
     with patch(
-        "meetingtool.backends.cohere_backend.detect_voiced",
+        "transcribemcp.backends.cohere_backend.detect_voiced",
         return_value=_fake_spans(),
     ), patch.object(
         backend, "_ensure_loaded", lambda: None,
@@ -76,7 +75,7 @@ def test_cohere_drops_empty_utterances(cohere_settings, tmp_path):
     backend = CohereBackend()
     backend._runtime = "transformers"
     with patch(
-        "meetingtool.backends.cohere_backend.detect_voiced",
+        "transcribemcp.backends.cohere_backend.detect_voiced",
         return_value=_fake_spans(),
     ), patch.object(
         backend, "_ensure_loaded", lambda: None,
@@ -99,7 +98,7 @@ def test_cohere_no_voice_returns_empty(cohere_settings, tmp_path):
     backend = CohereBackend()
     backend._runtime = "transformers"
     with patch(
-        "meetingtool.backends.cohere_backend.detect_voiced",
+        "transcribemcp.backends.cohere_backend.detect_voiced",
         return_value=[],
     ), patch.object(
         backend, "_ensure_loaded", lambda: None,
@@ -112,10 +111,9 @@ def test_cohere_no_voice_returns_empty(cohere_settings, tmp_path):
 
 
 def test_router_dispatches_to_cohere(monkeypatch, tmp_path):
-    from meetingtool.transcribe import get_backend_fn
+    from transcribemcp.transcribe import get_backend_fn
 
     monkeypatch.setenv("TRANSCRIPTION_BACKEND", "cohere")
-    monkeypatch.setenv("MEETINGTOOL_DATA_DIR", str(tmp_path))
     config_mod._settings = None
     try:
         fn = get_backend_fn()

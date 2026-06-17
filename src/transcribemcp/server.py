@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("meetingtool")
+mcp = FastMCP("transcribemcp")
 
 
 @mcp.tool()

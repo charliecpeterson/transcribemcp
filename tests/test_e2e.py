@@ -2,7 +2,7 @@
 
 Skipped unless:
 - tests/fixtures/sample.wav exists (run scripts/fetch_sample_audio.sh)
-- MEETINGTOOL_E2E=1 is set
+- TRANSCRIBEMCP_E2E=1 is set
 
 Diarization runs only when pyannote is installed AND HF_TOKEN is set;
 otherwise the no-speakers path is exercised.
@@ -12,14 +12,14 @@ from pathlib import Path
 
 import pytest
 
-from meetingtool import config as config_mod
-from meetingtool.scribe_tools import read_transcript, transcribe
+from transcribemcp import config as config_mod
+from transcribemcp.scribe_tools import read_transcript, transcribe
 
 FIXTURE = Path(__file__).parent / "fixtures" / "sample.wav"
 
 pytestmark = pytest.mark.skipif(
-    not FIXTURE.exists() or os.getenv("MEETINGTOOL_E2E") != "1",
-    reason="e2e disabled: set MEETINGTOOL_E2E=1 and fetch fixture via scripts/fetch_sample_audio.sh",
+    not FIXTURE.exists() or os.getenv("TRANSCRIBEMCP_E2E") != "1",
+    reason="e2e disabled: set TRANSCRIBEMCP_E2E=1 and fetch fixture via scripts/fetch_sample_audio.sh",
 )
 
 

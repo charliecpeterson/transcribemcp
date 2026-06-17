@@ -1,6 +1,6 @@
 """Pure-logic tests for assign_speakers. Doesn't load pyannote."""
-from meetingtool.backends.base import Segment
-from meetingtool.diarize import SpeakerTurn, assign_speakers
+from transcribemcp.backends.base import Segment
+from transcribemcp.diarize import SpeakerTurn, assign_speakers
 
 
 def test_empty_turns_leaves_speakers_none():

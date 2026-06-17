@@ -16,7 +16,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_detect_voiced_returns_spans():
-    from meetingtool.vad import VoicedSpan, detect_voiced
+    from transcribemcp.vad import VoicedSpan, detect_voiced
 
     spans = detect_voiced(str(FIXTURE))
     assert isinstance(spans, list)
@@ -28,7 +28,7 @@ def test_detect_voiced_returns_spans():
 
 
 def test_detect_voiced_spans_are_monotonic():
-    from meetingtool.vad import detect_voiced
+    from transcribemcp.vad import detect_voiced
 
     spans = detect_voiced(str(FIXTURE))
     for a, b in zip(spans, spans[1:]):
@@ -36,7 +36,7 @@ def test_detect_voiced_spans_are_monotonic():
 
 
 def test_max_speech_cap_is_respected():
-    from meetingtool.vad import detect_voiced
+    from transcribemcp.vad import detect_voiced
 
     spans = detect_voiced(str(FIXTURE), max_speech_s=5.0)
     # silero uses max_speech_duration_s as a soft cap — it splits on interior

@@ -4,8 +4,8 @@ from unittest.mock import patch
 import httpx
 import pytest
 
-from meetingtool import config as config_mod
-from meetingtool.backends.qwen3_backend import Qwen3Backend
+from transcribemcp import config as config_mod
+from transcribemcp.backends.qwen3_backend import Qwen3Backend
 
 
 @pytest.fixture
@@ -15,7 +15,6 @@ def vllm_settings(monkeypatch, tmp_path):
     monkeypatch.setenv("QWEN3_VLLM_URL", "http://mock-vllm.invalid/v1")
     monkeypatch.setenv("QWEN3_VLLM_API_KEY", "secret-123")
     monkeypatch.setenv("DIARIZE", "false")
-    monkeypatch.setenv("MEETINGTOOL_DATA_DIR", str(tmp_path))
     # Force settings reload
     config_mod._settings = None
     yield
@@ -51,7 +50,7 @@ def test_vllm_mode_parses_segments(vllm_settings, tmp_path):
         kwargs.pop("timeout", None)
         return real_client(transport=transport, **kwargs)
 
-    with patch("meetingtool.backends.qwen3_backend.httpx.Client", side_effect=fake_client):
+    with patch("transcribemcp.backends.qwen3_backend.httpx.Client", side_effect=fake_client):
         result = backend.transcribe(str(audio), progress=lambda *_: None)
 
     assert result.backend_name == "qwen3_asr"
@@ -65,7 +64,6 @@ def test_vllm_mode_missing_url_errors(monkeypatch, tmp_path):
     monkeypatch.setenv("TRANSCRIPTION_BACKEND", "qwen3_asr")
     monkeypatch.setenv("QWEN3_MODE", "vllm")
     monkeypatch.setenv("QWEN3_VLLM_URL", "")
-    monkeypatch.setenv("MEETINGTOOL_DATA_DIR", str(tmp_path))
     config_mod._settings = None
     try:
         audio = tmp_path / "fake.wav"

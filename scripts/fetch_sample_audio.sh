@@ -33,7 +33,7 @@ URLS=(
     "https://github.com/pyannote/pyannote-audio/raw/develop/tutorials/assets/sample.wav"
 )
 
-TMP=$(mktemp -t meetingtool_sample.XXXXXX)
+TMP=$(mktemp -t transcribemcp_sample.XXXXXX)
 trap 'rm -f "$TMP"' EXIT
 
 FETCHED=""

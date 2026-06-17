@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(
 
 def test_decode_pcm_returns_1d_float32_tensor():
     torch = pytest.importorskip("torch")
-    from meetingtool.audio import DEFAULT_SR, decode_pcm
+    from transcribemcp.audio import DEFAULT_SR, decode_pcm
 
     wav = decode_pcm(str(FIXTURE))
     assert isinstance(wav, torch.Tensor)
@@ -24,7 +24,7 @@ def test_decode_pcm_returns_1d_float32_tensor():
 
 def test_decode_pcm_respects_sample_rate():
     pytest.importorskip("torch")
-    from meetingtool.audio import decode_pcm
+    from transcribemcp.audio import decode_pcm
 
     slow = decode_pcm(str(FIXTURE), sample_rate=8000)
     fast = decode_pcm(str(FIXTURE), sample_rate=16000)
@@ -34,7 +34,7 @@ def test_decode_pcm_respects_sample_rate():
 
 def test_load_waveform_shape_is_pyannote_compatible():
     torch = pytest.importorskip("torch")
-    from meetingtool.audio import DEFAULT_SR, load_waveform
+    from transcribemcp.audio import DEFAULT_SR, load_waveform
 
     out = load_waveform(str(FIXTURE))
     assert set(out.keys()) == {"waveform", "sample_rate"}

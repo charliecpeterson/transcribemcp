@@ -2,7 +2,7 @@
 
 > Living document. Updated incrementally by the deep-planner skill.
 > Last updated: 2026-06-16
-> Current phase: Phase 2 complete; Phase 3 (rename + docs) next
+> Current phase: restructure complete (Phases 1–3 done); user to run real-audio e2e
 
 ## Goal                                                    (always)
 Strip meetingmcp down to a thin local transcription MCP — no DB, no
@@ -232,19 +232,38 @@ before the rename.
 **Effort**: well under the half-day estimate.
 
 ### Phase 3: rename to transcribemcp + rewire clients + docs
-- [ ] Rename `src/meetingtool/` → `src/transcribemcp/`, repo dir,
-      `pyproject` name, console-script entry point.
-- [ ] Rename the wrapper to `~/mcps/bin/transcribemcp-run`.
-- [ ] Re-register in Claude Code and Goose client configs under the
-      new name; remove the old `meetingmcp` registration.
-- [ ] Rewrite `CLAUDE.md` and `README.md` for the thin surface; delete
-      `meeting-assistant-plan.md` and the old phase plan references.
-- [ ] Verify end-to-end: `MEETINGTOOL_E2E=1 uv run pytest
-      tests/test_e2e.py` against `sample.wav` through the new
-      `transcribe` tool, on both Mac (MLX) and CUDA if available.
-- [ ] **Verification gate**: confirm Goose resets its tool-call
-      timeout on progress notifications. If not, re-open the
-      background+sidecar decision before relying on long-file sync.
+**DONE 2026-06-16.** Suite green under the new package name; wrapper
+launches and answers the MCP handshake end-to-end.
+- [x] `git mv src/meetingtool → src/transcribemcp`. Relative imports
+      survived; only `server.py` FastMCP name, `pyproject` (name +
+      console script), and test absolute-imports changed. `uv sync`
+      rebuilt the editable install as `transcribemcp==0.1.0`.
+- [x] Wrapper renamed `~/mcps/bin/meetingmcp-run` →
+      `~/mcps/bin/transcribemcp-run`; console-script token updated.
+      Verified: launches, reinstalls extras, returns a valid
+      `initialize` result.
+- [x] Client re-registration: **no live Claude Code registration
+      existed** (`claude mcp list` shows only claude.ai + security-
+      advisories), so nothing to migrate or remove. README documents
+      `claude mcp add transcribemcp ~/mcps/bin/transcribemcp-run` and
+      the Goose stdio-extension equivalent. User wires when ready.
+- [x] Rewrote `CLAUDE.md` and `README.md` for the thin surface;
+      deleted `meeting-assistant-plan.md`. Cleaned the stale
+      `MEETINGTOOL_DATA_DIR` from `.env.example` (→ `OUTPUT_DIR`) and
+      a cosmetic temp-name in `fetch_sample_audio.sh`. Renamed the
+      test gate `MEETINGTOOL_E2E` → `TRANSCRIBEMCP_E2E`.
+- [~] e2e: `test_e2e.py` rewritten onto the `transcribe` tool and
+      **collects cleanly** under the new name (skips without the env +
+      fixture). The real-audio run is deferred to the user — no
+      `sample.wav` fixture present locally and the ML extras aren't in
+      the test env. Run on Mac (MLX) / CUDA via
+      `TRANSCRIBEMCP_E2E=1 uv run --extra whisperx --extra dev pytest
+      tests/test_e2e.py`.
+- [x] **Verification gate (resolved during planning, not deferred):**
+      neither Claude Code nor Goose resets the tool-call timeout on
+      progress notifications. The sync decision stands; mitigation is
+      "raise the client hard-timeout + idempotent re-call," documented
+      in both `CLAUDE.md` and `README.md`. No background+sidecar needed.
 **Out of scope for this phase**: nothing — this closes the restructure.
 **Effort**: ~half a day, mostly mechanical.
 

@@ -1333,83 +1333,6 @@ wheels = [
 ]
 
 [[package]]
-name = "meetingtool"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "httpx" },
-    { name = "mcp", extra = ["cli"] },
-    { name = "pydantic-settings" },
-    { name = "python-dotenv" },
-]
-
-[package.optional-dependencies]
-cohere = [
-    { name = "imageio-ffmpeg" },
-    { name = "silero-vad" },
-    { name = "torch" },
-    { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
-    { name = "transformers", version = "5.5.4", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-]
-cohere-mlx = [
-    { name = "mlx-audio", marker = "sys_platform == 'darwin'" },
-]
-dev = [
-    { name = "imageio-ffmpeg" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-]
-diarize = [
-    { name = "imageio-ffmpeg" },
-    { name = "pyannote-audio" },
-]
-qwen3 = [
-    { name = "soundfile" },
-    { name = "torch" },
-    { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
-    { name = "transformers", version = "5.5.4", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-]
-qwen3-mlx = [
-    { name = "mlx", marker = "sys_platform == 'darwin'" },
-]
-vad = [
-    { name = "imageio-ffmpeg" },
-    { name = "silero-vad" },
-]
-whisperx = [
-    { name = "faster-whisper" },
-    { name = "whisperx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
-    { name = "whisperx", version = "3.8.5", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "faster-whisper", marker = "extra == 'whisperx'", specifier = ">=1.0.0" },
-    { name = "httpx", specifier = ">=0.27.0" },
-    { name = "imageio-ffmpeg", marker = "extra == 'cohere'", specifier = ">=0.5.1" },
-    { name = "imageio-ffmpeg", marker = "extra == 'dev'", specifier = ">=0.5.1" },
-    { name = "imageio-ffmpeg", marker = "extra == 'diarize'", specifier = ">=0.5.1" },
-    { name = "imageio-ffmpeg", marker = "extra == 'vad'", specifier = ">=0.5.1" },
-    { name = "mcp", extras = ["cli"], specifier = ">=1.0.0" },
-    { name = "mlx", marker = "sys_platform == 'darwin' and extra == 'qwen3-mlx'", specifier = ">=0.18.0" },
-    { name = "mlx-audio", marker = "sys_platform == 'darwin' and extra == 'cohere-mlx'", specifier = ">=0.2.0" },
-    { name = "pyannote-audio", marker = "extra == 'diarize'", specifier = ">=4.0.0" },
-    { name = "pydantic-settings", specifier = ">=2.5.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "silero-vad", marker = "extra == 'cohere'", specifier = ">=5.1" },
-    { name = "silero-vad", marker = "extra == 'vad'", specifier = ">=5.1" },
-    { name = "soundfile", marker = "extra == 'qwen3'", specifier = ">=0.12.0" },
-    { name = "torch", marker = "extra == 'cohere'", specifier = ">=2.3.0" },
-    { name = "torch", marker = "extra == 'qwen3'", specifier = ">=2.3.0" },
-    { name = "transformers", marker = "extra == 'cohere'", specifier = ">=4.45.0" },
-    { name = "transformers", marker = "extra == 'qwen3'", specifier = ">=4.45.0" },
-    { name = "whisperx", marker = "extra == 'whisperx'", specifier = ">=3.1.0" },
-]
-provides-extras = ["whisperx", "qwen3", "qwen3-mlx", "cohere", "cohere-mlx", "diarize", "vad", "dev"]
-
-[[package]]
 name = "miniaudio"
 version = "1.70"
 source = { registry = "https://pypi.org/simple" }
@@ -3376,6 +3299,83 @@ sdist = { url = "https://files.pythonhosted.org/packages/09/a9/6ba95a270c6f1fbcd
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf", size = 78374, upload-time = "2026-02-03T17:35:50.982Z" },
 ]
+
+[[package]]
+name = "transcribemcp"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "httpx" },
+    { name = "mcp", extra = ["cli"] },
+    { name = "pydantic-settings" },
+    { name = "python-dotenv" },
+]
+
+[package.optional-dependencies]
+cohere = [
+    { name = "imageio-ffmpeg" },
+    { name = "silero-vad" },
+    { name = "torch" },
+    { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
+    { name = "transformers", version = "5.5.4", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+]
+cohere-mlx = [
+    { name = "mlx-audio", marker = "sys_platform == 'darwin'" },
+]
+dev = [
+    { name = "imageio-ffmpeg" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+]
+diarize = [
+    { name = "imageio-ffmpeg" },
+    { name = "pyannote-audio" },
+]
+qwen3 = [
+    { name = "soundfile" },
+    { name = "torch" },
+    { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
+    { name = "transformers", version = "5.5.4", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+]
+qwen3-mlx = [
+    { name = "mlx", marker = "sys_platform == 'darwin'" },
+]
+vad = [
+    { name = "imageio-ffmpeg" },
+    { name = "silero-vad" },
+]
+whisperx = [
+    { name = "faster-whisper" },
+    { name = "whisperx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "whisperx", version = "3.8.5", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "faster-whisper", marker = "extra == 'whisperx'", specifier = ">=1.0.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
+    { name = "imageio-ffmpeg", marker = "extra == 'cohere'", specifier = ">=0.5.1" },
+    { name = "imageio-ffmpeg", marker = "extra == 'dev'", specifier = ">=0.5.1" },
+    { name = "imageio-ffmpeg", marker = "extra == 'diarize'", specifier = ">=0.5.1" },
+    { name = "imageio-ffmpeg", marker = "extra == 'vad'", specifier = ">=0.5.1" },
+    { name = "mcp", extras = ["cli"], specifier = ">=1.0.0" },
+    { name = "mlx", marker = "sys_platform == 'darwin' and extra == 'qwen3-mlx'", specifier = ">=0.18.0" },
+    { name = "mlx-audio", marker = "sys_platform == 'darwin' and extra == 'cohere-mlx'", specifier = ">=0.2.0" },
+    { name = "pyannote-audio", marker = "extra == 'diarize'", specifier = ">=4.0.0" },
+    { name = "pydantic-settings", specifier = ">=2.5.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "silero-vad", marker = "extra == 'cohere'", specifier = ">=5.1" },
+    { name = "silero-vad", marker = "extra == 'vad'", specifier = ">=5.1" },
+    { name = "soundfile", marker = "extra == 'qwen3'", specifier = ">=0.12.0" },
+    { name = "torch", marker = "extra == 'cohere'", specifier = ">=2.3.0" },
+    { name = "torch", marker = "extra == 'qwen3'", specifier = ">=2.3.0" },
+    { name = "transformers", marker = "extra == 'cohere'", specifier = ">=4.45.0" },
+    { name = "transformers", marker = "extra == 'qwen3'", specifier = ">=4.45.0" },
+    { name = "whisperx", marker = "extra == 'whisperx'", specifier = ">=3.1.0" },
+]
+provides-extras = ["whisperx", "qwen3", "qwen3-mlx", "cohere", "cohere-mlx", "diarize", "vad", "dev"]
 
 [[package]]
 name = "transformers"

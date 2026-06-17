@@ -10,7 +10,7 @@ def _no_diarize(monkeypatch):
     is the default. Tests that want diarize behaviour re-override the env.
     """
     monkeypatch.setenv("DIARIZE", "false")
-    from meetingtool import config
+    from transcribemcp import config
 
     config._settings = None
     yield

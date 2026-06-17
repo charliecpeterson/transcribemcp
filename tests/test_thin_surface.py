@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from meetingtool.pipeline import (
+from transcribemcp.pipeline import (
     render_transcript,
     run_transcribe,
     transcript_path_for,
@@ -17,19 +17,19 @@ from meetingtool.pipeline import (
 @pytest.fixture
 def fast_backend(monkeypatch):
     """Route the pipeline through a zero-delay stub, regardless of .env."""
-    from meetingtool import config
+    from transcribemcp import config
 
     monkeypatch.setenv("TRANSCRIPTION_BACKEND", "stub")
     config._settings = None
 
-    from meetingtool.backends.stub import StubBackend
+    from transcribemcp.backends.stub import StubBackend
 
     stub = StubBackend(delay=0.0)
 
     def fn(audio_path, *, progress, window=None):
         return stub.transcribe(audio_path, progress=progress, window=window)
 
-    monkeypatch.setattr("meetingtool.transcribe.get_backend_fn", lambda: fn)
+    monkeypatch.setattr("transcribemcp.transcribe.get_backend_fn", lambda: fn)
     return fn
 
 
@@ -51,7 +51,7 @@ def test_path_arg_overrides(tmp_path):
 
 
 def test_path_env_setting(tmp_path, monkeypatch):
-    from meetingtool import config
+    from transcribemcp import config
 
     out = tmp_path / "env_out"
     monkeypatch.setenv("OUTPUT_DIR", str(out))
@@ -117,7 +117,7 @@ def test_render_filters(tmp_path, fast_backend):
 
 
 def test_tool_validates_inputs(tmp_path, fast_backend):
-    from meetingtool.scribe_tools import transcribe
+    from transcribemcp.scribe_tools import transcribe
 
     with pytest.raises(ValueError):
         transcribe("relative/path.wav")
@@ -126,7 +126,7 @@ def test_tool_validates_inputs(tmp_path, fast_backend):
 
 
 def test_tool_roundtrip_and_cache_flag(tmp_path, fast_backend):
-    from meetingtool.scribe_tools import read_transcript, transcribe
+    from transcribemcp.scribe_tools import read_transcript, transcribe
 
     audio = _audio(tmp_path)
     r1 = transcribe(str(audio))
