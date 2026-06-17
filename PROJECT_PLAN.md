@@ -2,7 +2,7 @@
 
 > Living document. Updated incrementally by the deep-planner skill.
 > Last updated: 2026-06-16
-> Current phase: Phase 1 complete; Phase 2 (delete DB + ontology) next
+> Current phase: Phase 2 complete; Phase 3 (rename + docs) next
 
 ## Goal                                                    (always)
 Strip meetingmcp down to a thin local transcription MCP — no DB, no
@@ -195,25 +195,41 @@ paid off — `pipeline.py` is ~170 lines, `scribe_tools.py` ~100).
 
 ### Phase 2: delete the DB and the ontology
 Now the new surface is green, remove the old one in one sweep.
-- [ ] Delete `db.py`, `documents.py`, `jobs.py`, all of `tools/`
+**DONE 2026-06-16.** 6,144 deletions / 26 insertions across 34 files;
+`src/` dropped to ~1,293 LOC. Suite green (16 passed / 9 skipped).
+- [x] Deleted `db.py`, `documents.py`, `jobs.py`, all of `tools/`
       (chat, documents, jobs, meetings, persons, projects, search,
       series, speakers, summaries).
-- [ ] Delete the matching tests (`test_workflow.py` and every
-      ontology/DB/jobs test). Keep `test_e2e.py`, `conftest.py`
-      (trim DB fixtures), and the new Phase-1 tests.
-- [ ] Strip `transcribe.py` to the backend router only (it already
-      mostly is) or fold it into `pipeline.py`.
-- [ ] Rewrite `server.py` / `tools/__init__.py` to register only
-      `ping`, `transcribe`, `read_transcript`, `list_transcripts`.
-- [ ] Prune `pyproject.toml`: drop extras/deps used only by the
-      ontology (PDF/DOCX parsers from `documents.py`, any FTS-only
-      bits). Keep the engine extras (whisperx/cohere/qwen3/diarize/mlx).
-- [ ] **Data migration note**: existing SQLite data is dev-era; decide
-      abandon vs. one-off export script. Default: abandon (no
-      production data). Confirm before `rm` the DB file.
-**Out of scope for this phase**: the rename.
-**Effort**: ~half a day. Mostly `rm` + registration rewiring. The diff
-should be overwhelmingly deletions — if it grows, stop and re-check.
+- [x] Deleted the ontology/DB/jobs tests (14 files incl.
+      `test_workflow.py`, `test_transcript_filters.py`). Kept the
+      engine unit tests (audio, vad, diarize-merge, cohere, qwen3),
+      `test_thin_surface.py`, and a rewritten `test_e2e.py`.
+- [x] `transcribe.py` was already the backend router only; left as-is
+      (not folded into `pipeline.py` — it's the lazy backend-selection
+      seam and reads cleanly standalone).
+- [x] `server.py` unchanged (FastMCP + `ping`); the `tools` package is
+      gone, `__main__.py` now imports only `scribe_tools`. Registers
+      exactly `ping`, `transcribe`, `read_transcript`.
+- [x] Pruned `pyproject.toml`: dropped `platformdirs` (was only the
+      data-dir), `pypdf` + `python-docx` (only `documents.py`). Kept
+      `httpx` (qwen3 vLLM backend) and all engine extras. Updated the
+      stale description. `uv sync` confirmed nothing else needed them.
+- [x] `config.py` cleaned: removed `db_path`, `transcripts_dir`,
+      `meetingtool_data_dir`, `ensure_dirs` (all DB/data-dir cruft).
+- [ ] **Data migration**: the old SQLite file at
+      `~/Library/Application Support/meetingtool/meetingtool.db`
+      (dev-era data) is now orphaned but NOT deleted — left on disk
+      pending user's explicit "rm it." No export written (no
+      production data to preserve).
+
+**Deferred to Phase 3 (per roadmap):** `CLAUDE.md`, `README.md`, and
+`meeting-assistant-plan.md` still describe the old 40-tool ontology
+surface. They are now actively stale and misleading to a fresh
+session — Phase 3 rewrites them. Pull forward if a session lands
+before the rename.
+
+**Out of scope for this phase**: the rename, the docs rewrite.
+**Effort**: well under the half-day estimate.
 
 ### Phase 3: rename to transcribemcp + rewire clients + docs
 - [ ] Rename `src/meetingtool/` → `src/transcribemcp/`, repo dir,

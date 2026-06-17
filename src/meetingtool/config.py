@@ -1,8 +1,6 @@
 from pathlib import Path
 from typing import Literal
 
-from platformdirs import user_data_dir
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -41,18 +39,6 @@ class Settings(BaseSettings):
     # dir is read-only/shared, or to collect transcripts in one place.
     output_dir: Path | None = None
 
-    meetingtool_data_dir: Path = Field(
-        default_factory=lambda: Path(user_data_dir("meetingtool"))
-    )
-
-    @property
-    def db_path(self) -> Path:
-        return self.meetingtool_data_dir / "meetingtool.db"
-
-    @property
-    def transcripts_dir(self) -> Path:
-        return self.meetingtool_data_dir / "transcripts"
-
     @property
     def active_model(self) -> str:
         """Model id the active backend will use, for transcript metadata.
@@ -69,10 +55,6 @@ class Settings(BaseSettings):
             return "cohere-transcribe"
         return "stub"
 
-    def ensure_dirs(self) -> None:
-        self.meetingtool_data_dir.mkdir(parents=True, exist_ok=True)
-        self.transcripts_dir.mkdir(parents=True, exist_ok=True)
-
 
 _settings: Settings | None = None
 
@@ -81,5 +63,4 @@ def get_settings() -> Settings:
     global _settings
     if _settings is None:
         _settings = Settings()
-        _settings.ensure_dirs()
     return _settings
