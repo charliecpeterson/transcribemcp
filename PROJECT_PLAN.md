@@ -1,8 +1,34 @@
 # Project Plan: thin local transcription MCP (meetingmcp restructure)
 
 > Living document. Updated incrementally by the deep-planner skill.
-> Last updated: 2026-06-16
-> Current phase: restructure complete (Phases 1–3 done); user to run real-audio e2e
+> Last updated: 2026-06-17
+> Current phase: ✅ RESTRUCTURE COMPLETE (Phases 1–3 done, live-validated)
+
+## Status: complete                                        (2026-06-17)
+The restructure shipped and is validated by real-world use, not just
+the test suite. Driven from Goose against real recordings, the full
+flow worked end-to-end: a 47-min `video.mp4` (~175s transcribe) and a
+batch of short `week*.wav` files, each via transcribe → read_transcript
+→ LLM summary. Every MCP tool call returned `success`; no MCP-side
+errors or latency surfaced. This effectively closes the Phase-3
+real-audio validation item.
+
+The only failures seen during validation were entirely in the **driving
+model's serving stack** (a local vLLM serving NVIDIA Nemotron-3-Super
+NVFP4 on a DGX Spark / GB10), which intermittently wedged mid-generation
+(frozen KV cache, engine never aborts). Proven independent of this MCP:
+the identical MCP + files worked flawlessly when Goose was pointed at
+gpt-5.5. Diagnosis and a repro harness (`~/scratch/vllm_wedge_loadtest.sh`)
+live outside this repo; ruled out `--async-scheduling`, prime remaining
+suspect is the NVFP4 MoE kernel on sm_121. **Not an MCP concern.**
+
+Verdict on further MCP work: **leave it boring.** No optimization
+warranted — the surface is thin, durable, and did its job. Future
+changes should be driven by a concrete, recurring friction, not
+anticipation. Tuning is config-level, not code: raise the Goose
+`transcribemcp` extension `timeout` for multi-hour recordings, set
+`WHISPER_MODEL=small|medium` for accuracy, enable `DIARIZE` + `HF_TOKEN`
+for speaker labels.
 
 ## Goal                                                    (always)
 Strip meetingmcp down to a thin local transcription MCP — no DB, no
