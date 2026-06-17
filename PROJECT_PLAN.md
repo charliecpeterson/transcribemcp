@@ -2,7 +2,7 @@
 
 > Living document. Updated incrementally by the deep-planner skill.
 > Last updated: 2026-06-16
-> Current phase: planning complete
+> Current phase: Phase 1 complete; Phase 2 (delete DB + ontology) next
 
 ## Goal                                                    (always)
 Strip meetingmcp down to a thin local transcription MCP — no DB, no
@@ -114,6 +114,19 @@ the driving LLM doing everything the ontology used to do.
     output. Cross-file speaker identity stays the LLM's job (no
     persons table).
 
+- **[2026-06-16] Repo move (done early, ahead of the rename)**
+  - **Choice**: relocated to `~/mcps/transcribemcp` and re-pointed
+    `origin` to `github.com/charliecpeterson/transcribemcp`. Wrapper
+    `~/mcps/bin/meetingmcp-run` `--directory` path updated. Plan +
+    restructure-plan pushed (commit b85bd29).
+  - **Deferred to Phase 3** (unchanged from roadmap): in-code package
+    rename `src/meetingtool/` to `src/transcribemcp/`, the `meetingtool`
+    console script, the wrapper *filename*, and the `.claude.json`
+    registration key. Live MCP keeps working because the wrapper
+    filename and script name are untouched.
+  - **Note**: old `github.com/charliecpeterson/meetingmcp` repo now
+    orphaned; user's call whether to archive/delete it.
+
 ## Deferred Register                                       (always)
 | Item | Why deferred | Trigger to revisit |
 |------|--------------|--------------------|
@@ -140,30 +153,45 @@ the engine while the ontology tests get deleted.
 
 ### Phase 1: build the thin surface alongside the old
 The new code lands in new modules; the old DB/ontology server still
-runs untouched until Phase 2.
-- [ ] `pipeline.py` — one synchronous function: resolve output path →
-      idempotent early-return if it exists → decode → backend ASR over
-      the **full file** (no windows) with progress → if diarize:
-      `diarize()` + `assign_speakers()` → write JSON. Reuses
-      `diarize.assign_speakers` (already pure) and `preflight_diarize`
-      (HF-token boundary check).
-- [ ] Transcript schema: `{audio_path, model, diarized, duration,
-      segments: [{start, end, speaker, text}]}`. One writer, one reader.
-- [ ] `transcribe(audio_path, diarize=…, backend=…, output_dir=…)`
-      MCP tool — wires the backend `progress` closure to
-      `ctx.report_progress()`; returns the resolved path.
-- [ ] `read_transcript(path, format=text|json|srt, time_range=…,
-      speaker=…)` — text/SRT rendering + light filtering.
-- [ ] `list_transcripts(dir)` (optional, build only if a real flow
-      needs it).
-- [ ] Output-path resolution: `<audio>.transcript.json` next to
-      source, `OUTPUT_DIR` override in `.env`. Idempotence = resolved
-      path exists.
-- [ ] New fast tests against `stub`: idempotence (second call no
-      recompute), schema round-trip, the three render formats,
-      output-path resolution, read-time filters.
+runs untouched until Phase 2. **DONE 2026-06-16** (commit pending).
+- [x] `pipeline.py` (pure, no MCP import) — `run_transcribe`: resolve
+      path → idempotent early-return → backend ASR over the **full file**
+      (no windows) → if diarize: `diarize()` + `assign_speakers()` →
+      write JSON. Plus `transcript_path_for` and the render helpers.
+- [x] Transcript schema: `{schema_version, audio_path, backend, model,
+      language, diarized, duration, created_at, segments:[{start, end,
+      speaker, text}]}`. Written by `_build_doc`, read by
+      `render_transcript`. `active_model` property added to config.
+- [x] `transcribe(audio_path, diarize=None, output_dir=None,
+      overwrite=False)` MCP tool in `scribe_tools.py`. Returns
+      `{transcript_path, cached, diarized, model, duration, segments}`.
+- [x] `read_transcript(path, format=text|json|srt, time_range, speaker)`
+      — render + filter server-side.
+- [x] Output-path resolution: `<audio>.transcript.json` beside source,
+      `OUTPUT_DIR` override (added to config). Idempotence = path exists.
+- [x] 9 fast tests in `tests/test_thin_surface.py` against `stub`:
+      path resolution (×3), schema, idempotence+overwrite, 3 formats,
+      filters, tool validation, tool roundtrip+cache flag. Full suite
+      green: 169 passed / 11 skipped.
+
+**Deviations from the original checklist (deliberate, see notes):**
+- **No `ctx.report_progress()` streaming.** Bridging a sync ASR
+  callback to the async loop from a worker thread fights "thin", and
+  progress was already established as UX-only (not a timeout defense).
+  `transcribe` is a sync tool with a stderr-logging progress callback,
+  matching every other tool in this repo. Live client progress is a
+  clean later add if wanted.
+- **`list_transcripts` skipped.** The orchestrating LLM has its own
+  filesystem tools; globbing `*.transcript.json` is free for it.
+  `read_transcript` earns its place (server-side format + filter =
+  token-lean); `list_transcripts` would just reimplement `ls`.
+- New tools registered via `__main__.py` importing `scribe_tools`
+  alongside the legacy `tools` package (removed in Phase 2). 45 tools
+  registered total during the overlap.
+
 **Out of scope for this phase**: deleting anything; the rename.
-**Effort**: ~1 focused day. This is the only phase that writes net-new code.
+**Effort**: done in well under the ~1 day estimate (the engine reuse
+paid off — `pipeline.py` is ~170 lines, `scribe_tools.py` ~100).
 
 ### Phase 2: delete the DB and the ontology
 Now the new surface is green, remove the old one in one sweep.

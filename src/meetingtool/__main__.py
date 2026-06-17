@@ -1,4 +1,5 @@
-from . import tools  # noqa: F401  — registers all @mcp.tool() decorators
+from . import scribe_tools  # noqa: F401  — new thin surface (transcribe, read_transcript)
+from . import tools  # noqa: F401  — legacy ontology tools (removed in Phase 2)
 from .server import mcp
 
 

@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     diarize: bool = False
     hf_token: str = ""
 
+    # Where transcript JSON is written. None = beside the source audio
+    # (<audio>.transcript.json). Set OUTPUT_DIR to redirect when the source
+    # dir is read-only/shared, or to collect transcripts in one place.
+    output_dir: Path | None = None
+
     meetingtool_data_dir: Path = Field(
         default_factory=lambda: Path(user_data_dir("meetingtool"))
     )
@@ -47,6 +52,22 @@ class Settings(BaseSettings):
     @property
     def transcripts_dir(self) -> Path:
         return self.meetingtool_data_dir / "transcripts"
+
+    @property
+    def active_model(self) -> str:
+        """Model id the active backend will use, for transcript metadata.
+
+        Backend-specific because each names its model differently; recording
+        it lets a transcript carry which model produced it.
+        """
+        b = self.transcription_backend
+        if b == "whisperx":
+            return self.whisper_model
+        if b == "qwen3_asr":
+            return f"qwen3-asr-{self.qwen3_size}"
+        if b == "cohere":
+            return "cohere-transcribe"
+        return "stub"
 
     def ensure_dirs(self) -> None:
         self.meetingtool_data_dir.mkdir(parents=True, exist_ok=True)
